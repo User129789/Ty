@@ -134,7 +134,7 @@ MoonLabel.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
 MoonLabel.TextColor3 = Color3.new(1, 1, 1)
 MoonLabel.Font = Enum.Font.GothamBlack
 MoonLabel.TextScaled = true
-MoonLabel.Text = "JxssMoon Kill"
+MoonLabel.Text = "Draco hub Moon Kill"
 MoonLabel.Parent = ScreenGui
 
 local function rainbowify(label)
@@ -218,39 +218,36 @@ task.spawn(function()
     end
 end)
 
-getgenv().AutoPunchEnabled = true
-local fastHitActive = true
-
-local function equipPunchHand()
-    local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-    for _, tool in ipairs(LocalPlayer.Backpack:GetChildren()) do
-        if tool.Name:lower():find("punch") then
-            tool.Parent = char
-        end
-    end
-end
-
-local function getHand()
-    local char = LocalPlayer.Character
-    if not char then return nil end
-    return char:FindFirstChild("RightHand") or char:FindFirstChild("Right Arm")
-end
-
-local function autoPunch()
-    while fastHitActive do
-        local char = LocalPlayer.Character
-        if char and char:FindFirstChild("Humanoid") then
-            local punch = LocalPlayer.Backpack:FindFirstChild("Punch")
-            if punch then
-                punch.Parent = char
-                if punch:FindFirstChild("attackTime") then
-                    punch.attackTime.Value = 0
-                end
-            end
-        end
-        task.wait(0.05)
-    end
-end
+_G.fastHitActive = state
+	if state then
+		task.spawn(function()
+			while _G.fastHitActive do
+				local punch = LocalPlayer.Backpack:FindFirstChild("Punch")
+				if punch then
+					punch.Parent = LocalPlayer.Character
+					if punch:FindFirstChild("attackTime") then
+						punch.attackTime.Value = 0
+					end
+				end
+				task.wait(0.1)
+			end
+		end)
+		task.spawn(function()
+			while _G.fastHitActive do
+				local punch = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Punch")
+				if punch then
+					punch:Activate()
+				end
+				task.wait(0.1)
+			end
+		end)
+	else
+		local punch = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Punch")
+		if punch then
+			punch.Parent = LocalPlayer.Backpack
+		end
+	end
+end)
 
 task.spawn(autoPunch)
 
